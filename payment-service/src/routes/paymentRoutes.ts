@@ -7,7 +7,7 @@ import {
   deletePayment,
 } from "../controllers/paymentController";
 
-const router = Router();
+const router = Routr();
 
 /**
  * @swagger
