@@ -5,6 +5,8 @@ import express, { Request, Response } from "express";
 import cors from "cors";
 import path from "path";
 import { createProxyMiddleware, Options } from "http-proxy-middleware";
+import { IncomingMessage, ServerResponse, ClientRequest } from "http";
+import { Socket } from "net";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -50,18 +52,28 @@ Object.entries(services).forEach(([pathName, target]) => {
     target,
     changeOrigin: true,
     pathRewrite: (pathStr: string) => pathStr, // Keep the path as-is
-    onProxyReq: (proxyReq, req: Request) => {
-      console.log(
-        `[Gateway] ${req.method} ${req.originalUrl} -> ${target}${req.originalUrl}`,
-      );
-    },
-    onError: (err: Error, req: Request, res: Response) => {
-      console.error(`[Gateway] Error proxying to ${target}:`, err.message);
-      res.status(503).json({
-        error: "Service Unavailable",
-        message: `The ${pathName} service is currently unavailable`,
-        service: pathName,
-      });
+    on: {
+      proxyReq: (proxyReq: ClientRequest, req: IncomingMessage) => {
+        console.log(
+          `[Gateway] ${req.method} ${req.url} -> ${target}${req.url}`,
+        );
+      },
+      error: (err: Error, req: IncomingMessage, res: ServerResponse | Socket) => {
+        console.error(`[Gateway] Error proxying to ${target}:`, err.message);
+        
+        if ("writeHead" in res) {
+          res.writeHead(503, { "Content-Type": "application/json" });
+          res.end(
+            JSON.stringify({
+              error: "Service Unavailable",
+              message: `The ${pathName} service is currently unavailable`,
+              service: pathName,
+            }),
+          );
+        } else {
+          res.destroy(); // For raw sockets/websockets, close the channel
+        }
+      },
     },
   };
 
