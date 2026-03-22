@@ -2,13 +2,13 @@
 // E-Commerce Microservices Dashboard Script
 // ==========================================
 
-const GATEWAY_URL = 'http://localhost:3000';
+const GATEWAY_URL = "http://localhost:3000";
 
 const services = [
-  { name: 'products', port: 3001, label: 'Product Service' },
-  { name: 'customers', port: 3002, label: 'Customer Service' },
-  { name: 'orders', port: 3003, label: 'Order Service' },
-  { name: 'payments', port: 3004, label: 'Payment Service' },
+  { name: "products", port: 3001, label: "Product Service" },
+  { name: "customers", port: 3002, label: "Customer Service" },
+  { name: "orders", port: 3003, label: "Order Service" },
+  { name: "payments", port: 3004, label: "Payment Service" },
 ];
 
 // ========== Status Checks ==========
@@ -27,23 +27,23 @@ async function checkServiceHealth(service) {
     clearTimeout(timeout);
 
     if (response.ok) {
-      statusDot.className = 'status-dot online';
-      statusText.textContent = 'Online';
-      statusText.style.color = '#10b981';
+      statusDot.className = "status-dot online";
+      statusText.textContent = "Online";
+      statusText.style.color = "#10b981";
       return true;
     }
   } catch (e) {
     // Service is offline
   }
 
-  statusDot.className = 'status-dot offline';
-  statusText.textContent = 'Offline';
-  statusText.style.color = '#f43f5e';
+  statusDot.className = "status-dot offline";
+  statusText.textContent = "Offline";
+  statusText.style.color = "#f43f5e";
   return false;
 }
 
 async function checkGatewayHealth() {
-  const gatewayDot = document.querySelector('#gatewayStatus .status-dot');
+  const gatewayDot = document.querySelector("#gatewayStatus .status-dot");
 
   try {
     const controller = new AbortController();
@@ -55,14 +55,14 @@ async function checkGatewayHealth() {
     clearTimeout(timeout);
 
     if (response.ok) {
-      gatewayDot.className = 'status-dot online';
+      gatewayDot.className = "status-dot online";
       return true;
     }
   } catch (e) {
     // Gateway offline
   }
 
-  gatewayDot.className = 'status-dot offline';
+  gatewayDot.className = "status-dot offline";
   return false;
 }
 
@@ -81,7 +81,7 @@ async function fetchServiceData(service) {
     });
     clearTimeout(timeout);
 
-    if (!response.ok) throw new Error('Failed to fetch');
+    if (!response.ok) throw new Error("Failed to fetch");
 
     const data = await response.json();
     countBadge.textContent = data.length;
@@ -91,53 +91,55 @@ async function fetchServiceData(service) {
       return;
     }
 
-    tbody.innerHTML = data.map(item => renderRow(service.name, item)).join('');
+    tbody.innerHTML = data
+      .map((item) => renderRow(service.name, item))
+      .join("");
   } catch (e) {
-    countBadge.textContent = '—';
+    countBadge.textContent = "—";
     tbody.innerHTML = `<tr><td colspan="4" class="empty-msg">Service unavailable</td></tr>`;
   }
 }
 
 function renderRow(serviceName, item) {
   switch (serviceName) {
-    case 'products':
+    case "products":
       return `
         <tr>
           <td title="${item.name}">${item.name}</td>
-          <td>${item.category || '—'}</td>
+          <td>${item.category || "—"}</td>
           <td>$${Number(item.price).toFixed(2)}</td>
-          <td>${item.stock ?? '—'}</td>
+          <td>${item.stock ?? "—"}</td>
         </tr>`;
 
-    case 'customers':
+    case "customers":
       return `
         <tr>
           <td title="${item.name}">${item.name}</td>
           <td title="${item.email}">${item.email}</td>
-          <td>${item.phone || '—'}</td>
-          <td>${item.address?.city || '—'}</td>
+          <td>${item.phone || "—"}</td>
+          <td>${item.address?.city || "—"}</td>
         </tr>`;
 
-    case 'orders':
+    case "orders":
       return `
         <tr>
-          <td title="${item._id}">${item._id?.slice(-8) || '—'}</td>
-          <td title="${item.customerId}">${item.customerId?.slice(-8) || '—'}</td>
+          <td title="${item._id}">${item._id?.slice(-8) || "—"}</td>
+          <td title="${item.customerId}">${item.customerId?.slice(-8) || "—"}</td>
           <td>$${Number(item.totalAmount).toFixed(2)}</td>
           <td><span class="badge badge-${item.status}">${item.status}</span></td>
         </tr>`;
 
-    case 'payments':
+    case "payments":
       return `
         <tr>
-          <td title="${item._id}">${item._id?.slice(-8) || '—'}</td>
-          <td title="${item.orderId}">${item.orderId?.slice(-8) || '—'}</td>
+          <td title="${item._id}">${item._id?.slice(-8) || "—"}</td>
+          <td title="${item.orderId}">${item.orderId?.slice(-8) || "—"}</td>
           <td>$${Number(item.amount).toFixed(2)}</td>
           <td><span class="badge badge-${item.status}">${item.status}</span></td>
         </tr>`;
 
     default:
-      return '';
+      return "";
   }
 }
 
@@ -145,28 +147,28 @@ function renderRow(serviceName, item) {
 
 async function refreshAll() {
   // Animate refresh button
-  const btn = document.querySelector('.btn-refresh svg');
-  btn.style.transform = 'rotate(360deg)';
-  setTimeout(() => (btn.style.transform = ''), 400);
+  const btn = document.querySelector(".btn-refresh svg");
+  btn.style.transform = "rotate(360deg)";
+  setTimeout(() => (btn.style.transform = ""), 400);
 
   // Check all statuses in parallel
-  const healthPromises = services.map(s => checkServiceHealth(s));
+  const healthPromises = services.map((s) => checkServiceHealth(s));
   healthPromises.push(checkGatewayHealth());
 
   await Promise.all(healthPromises);
 
   // Fetch data from all services via gateway
-  await Promise.all(services.map(s => fetchServiceData(s)));
+  await Promise.all(services.map((s) => fetchServiceData(s)));
 
   // Update timestamp
   const now = new Date();
-  document.getElementById('lastUpdated').textContent =
+  document.getElementById("lastUpdated").textContent =
     `Updated: ${now.toLocaleTimeString()}`;
 }
 
 // ========== Init ==========
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   refreshAll();
 
   // Auto-refresh every 15 seconds
