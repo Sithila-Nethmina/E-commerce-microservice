@@ -2,12 +2,8 @@ name: API Gateway CI
 
 on:
   push:
-    paths:
-      - 'api-gateway/**'
-      - '.github/workflows/api-gateway.yml'
+    branches: [ master, main ]
   pull_request:
-    paths:
-      - 'api-gateway/**'
 
 jobs:
   test:
@@ -34,5 +30,5 @@ jobs:
         run: npm run lint
 
       - name: Build
+        if: always()
         run: npm run build
-

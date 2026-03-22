@@ -2,12 +2,8 @@ name: Product Service CI
 
 on:
   push:
-    paths:
-      - 'product-service/**'
-      - '.github/workflows/product-service.yml'
+    branches: [ master, main ]
   pull_request:
-    paths:
-      - 'product-service/**'
 
 jobs:
   test:
@@ -34,5 +30,5 @@ jobs:
         run: npm run lint
 
       - name: Build
+        if: always()
         run: npm run build
-
