@@ -2,12 +2,8 @@ name: Customer Service CI
 
 on:
   push:
-    paths:
-      - 'customer-service/**'
-      - '.github/workflows/customer-service.yml'
+    branches: [ master, main ]
   pull_request:
-    paths:
-      - 'customer-service/**'
 
 jobs:
   test:
@@ -20,7 +16,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check for changes
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            changed:
+              - 'customer-service/**'
+              - '.github/workflows/customer-service.yml'
+
       - name: Setup Node.js
+        if: steps.filter.outputs.changed == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -28,14 +34,13 @@ jobs:
           cache-dependency-path: customer-service/package-lock.json
 
       - name: Install dependencies
+        if: steps.filter.outputs.changed == 'true'
         run: npm install
 
       - name: Run linter
+        if: steps.filter.outputs.changed == 'true'
         run: npm run lint
 
       - name: Build
-        if: always()
+        if: steps.filter.outputs.changed == 'true' && always()
         run: npm run build
-
-
-
