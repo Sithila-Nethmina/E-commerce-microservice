@@ -1,8 +1,12 @@
-const eslint = require("@eslint/js");
-const tseslint = require("typescript-eslint");
+import eslint from "@eslint/js";
+import tseslint from "typescript-eslint";
+import { fileURLToPath } from "url";
+import path from "path";
 
-module.exports = tseslint.config(
-  // Global Ignores (Avoid linting compiled outputs and config files)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export default tseslint.config(
   {
     ignores: [
       "dist/**",

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "E-Commerce Microservices API Gateway",
   "main": "dist/index.js",
+  "type": "module",
   "scripts": {
     "build": "tsc",
     "start": "ts-node src/index.ts",
