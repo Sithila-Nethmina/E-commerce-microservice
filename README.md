@@ -19,21 +19,22 @@ Client → API Gateway (Port 3000)
 
 ## 🛠️ Microservices Directory
 
-| # | Service | Port | Database | Description |
-|---|---------|------|----------|-------------|
-| 1 | Product Service | 3001 | MongoDB Atlas | Catalog, Inventory management (CRUD) |
-| 2 | Customer Service | 3002 | MongoDB Atlas | Customer registration & profiles (CRUD) |
-| 3 | Order Service | 3003 | MongoDB Atlas | Cart checkouts & Status tracking (CRUD) |
-| 4 | Payment Service | 3004 | MongoDB Atlas | Gateway transaction flow audits (CRUD) |
-| - | API Gateway | 3000 | - | Proxy request delegator, Static Dashboard host |
+| #   | Service          | Port | Database      | Description                                    |
+| --- | ---------------- | ---- | ------------- | ---------------------------------------------- |
+| 1   | Product Service  | 3001 | MongoDB Atlas | Catalog, Inventory management (CRUD)           |
+| 2   | Customer Service | 3002 | MongoDB Atlas | Customer registration & profiles (CRUD)        |
+| 3   | Order Service    | 3003 | MongoDB Atlas | Cart checkouts & Status tracking (CRUD)        |
+| 4   | Payment Service  | 3004 | MongoDB Atlas | Gateway transaction flow audits (CRUD)         |
+| -   | API Gateway      | 3000 | -             | Proxy request delegator, Static Dashboard host |
 
 ---
 
 ## ⚙️ Environment Variables (`.env`)
 
-Each service requires a `.env` file in its root directory. 
+Each service requires a `.env` file in its root directory.
 
 ### Microservice `.env` Example:
+
 ```env
 PORT=3001
 MONGO_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/database
@@ -42,6 +43,7 @@ APP_URL=http://localhost:3001
 ```
 
 ### API Gateway `.env` Example:
+
 ```env
 PORT=3000
 ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5500
@@ -56,32 +58,86 @@ PAYMENT_SERVICE_URL=http://localhost:3004
 ## 🚀 How to Run
 
 ### **Run Everything Immediately (Windows)**
+
 The root directory includes batch startup helpers:
 
 - **Start All Services**: Double-click `start-all.bat`
 - **Stop All Services**: Double-click `stop-all.bat`
+
+### **Run via VS Code Tasks**
+
+From VS Code, open the `Terminal > Run Task...` menu and start:
+
+- `Start All Services (VS Code Terminal)` to launch all services in parallel.
+- `Stop All Services (Kill Processes)` to stop all service processes.
+
+### **Start services manually**
+
+From each folder:
+
+```bash
+cd product-service && npm start
+cd customer-service && npm start
+cd order-service && npm start
+cd payment-service && npm start
+cd api-gateway && npm start
+```
+
+---
+
+## 🧪 Testing & Local Development
+
+### **Run tests for one service**
+
+In the service folder:
+
+```bash
+npm test
+```
+
+### **Run all tests across services**
+
+At root (from workspace):
+
+```bash
+cd product-service && npm test
+cd customer-service && npm test
+cd order-service && npm test
+cd payment-service && npm test
+cd api-gateway && npm test
+```
+
+### **Linting**
+
+In each service folder:
+
+```bash
+npm run lint
+```
 
 ---
 
 ## 📊 Live Dashboard & Docs
 
 ### 🖼️ Frontend Panel
+
 Once started, the dashboard is served automatically by the Gateway:
 👉 **[http://localhost:3000/dashboard/index.html](http://localhost:3000/dashboard/index.html)**
 
 ### 📖 Swagger API Documentation
+
 Run and audit with isolated sandbox clients:
 
-| Service | Direct Access (Native) | Routed via Gateway |
-|---------|-----------------------|--------------------|
-| **Products** | [http://localhost:3001/api-docs](http://localhost:3001/api-docs) | [http://localhost:3000/products/api-docs](http://localhost:3000/products/api-docs) |
+| Service       | Direct Access (Native)                                           | Routed via Gateway                                                                   |
+| ------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| **Products**  | [http://localhost:3001/api-docs](http://localhost:3001/api-docs) | [http://localhost:3000/products/api-docs](http://localhost:3000/products/api-docs)   |
 | **Customers** | [http://localhost:3002/api-docs](http://localhost:3002/api-docs) | [http://localhost:3000/customers/api-docs](http://localhost:3000/customers/api-docs) |
-| **Orders** | [http://localhost:3003/api-docs](http://localhost:3003/api-docs) | [http://localhost:3000/orders/api-docs](http://localhost:3000/orders/api-docs) |
-| **Payments** | [http://localhost:3004/api-docs](http://localhost:3004/api-docs) | [http://localhost:3000/payments/api-docs](http://localhost:3000/payments/api-docs) |
+| **Orders**    | [http://localhost:3003/api-docs](http://localhost:3003/api-docs) | [http://localhost:3000/orders/api-docs](http://localhost:3000/orders/api-docs)       |
+| **Payments**  | [http://localhost:3004/api-docs](http://localhost:3004/api-docs) | [http://localhost:3000/payments/api-docs](http://localhost:3000/payments/api-docs)   |
 
 ---
 
 ## 🛡️ CI/CD & Code Standards
 
--   **Manual Linters**: Execute `npm run lint` in any of the service folders to trigger automated **ESLint fixing routines**.
--   **GitHub Actions CI**: Automated node-building triggers exist on `.github/workflows/` path flags which strictly enforces build test checkpoints for merging PR pipelines perfectly.
+- **Manual Linters**: Execute `npm run lint` in any of the service folders to trigger automated **ESLint fixing routines**.
+- **GitHub Actions CI**: Automated node-building triggers exist on `.github/workflows/` path flags which strictly enforces build test checkpoints for merging PR pipelines perfectly.

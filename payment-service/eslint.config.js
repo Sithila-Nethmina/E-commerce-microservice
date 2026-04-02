@@ -1,8 +1,12 @@
-const eslint = require("@eslint/js");
-const tseslint = require("typescript-eslint");
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+import eslint from "@eslint/js";
+import tsPlugin from "@typescript-eslint/eslint-plugin";
+import tsParser from "@typescript-eslint/parser";
 
-module.exports = tseslint.config(
-  // Global Ignores (Avoid linting compiled outputs and config files)
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+export default [
   {
     ignores: [
       "dist/**",
@@ -12,12 +16,15 @@ module.exports = tseslint.config(
     ],
   },
   eslint.configs.recommended,
-  ...tseslint.configs.recommended,
+  ...tsPlugin.configs.recommended,
   {
     languageOptions: {
+      parser: tsParser,
       parserOptions: {
         project: "./tsconfig.json",
         tsconfigRootDir: __dirname,
+        ecmaVersion: "latest",
+        sourceType: "module",
       },
     },
     rules: {
@@ -29,4 +36,4 @@ module.exports = tseslint.config(
       ],
     },
   },
-);
+];
