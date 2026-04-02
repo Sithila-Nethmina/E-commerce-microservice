@@ -16,7 +16,7 @@ export default [
     ],
   },
   eslint.configs.recommended,
-  ...tsPlugin.configs.recommended,
+  tsPlugin.configs.recommended,
   {
     languageOptions: {
       parser: tsParser,
